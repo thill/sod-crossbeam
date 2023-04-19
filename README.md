@@ -1,6 +1,6 @@
 # sod-crossbeam
 
-[`sod::Service`](github.com/thill/sod) implementations to interact with `crossbeam` queues.
+[`sod::Service`](http://github.com/thill/sod) implementations to interact with `crossbeam` queues.
 
 ## Service Impls
 
