@@ -54,9 +54,9 @@
 use std::sync::Arc;
 
 use crossbeam::queue::{ArrayQueue, SegQueue};
-use sod::{RetryableService, Service};
+use sod::{Retryable, Service};
 
-/// A [`sod::Service`] that pushes input to an underlying [`crossbeam::queue::ArrayQueue`], returning the element as an error when the queue is full.
+/// A [`sod::Service`] that is [`sod::Retryable`] and pushes input to an underlying [`crossbeam::queue::ArrayQueue`], returning the element as an error when the queue is full.
 pub struct ArrayQueuePusher<T> {
     q: Arc<ArrayQueue<T>>,
 }
@@ -72,7 +72,7 @@ impl<T> Service<T> for ArrayQueuePusher<T> {
         self.q.push(input)
     }
 }
-impl<T> RetryableService<T, T> for ArrayQueuePusher<T> {
+impl<T> Retryable<T, T> for ArrayQueuePusher<T> {
     fn parse_retry(&self, err: T) -> Result<T, sod::RetryError<T>> {
         Ok(err)
     }
