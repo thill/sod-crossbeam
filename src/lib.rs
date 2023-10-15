@@ -51,7 +51,7 @@
 //! pusher.process(456).unwrap();
 //! ```
 
-use std::sync::Arc;
+use std::{convert::Infallible, sync::Arc};
 
 use crossbeam::queue::{ArrayQueue, SegQueue};
 use sod::{Retryable, Service};
@@ -65,7 +65,8 @@ impl<T> ArrayQueuePusher<T> {
         Self { q }
     }
 }
-impl<T> Service<T> for ArrayQueuePusher<T> {
+impl<T> Service for ArrayQueuePusher<T> {
+    type Input = T;
     type Output = ();
     type Error = T;
     fn process(&self, input: T) -> Result<Self::Output, Self::Error> {
@@ -87,9 +88,10 @@ impl<T> ArrayQueueForcePusher<T> {
         Self { q }
     }
 }
-impl<T> Service<T> for ArrayQueueForcePusher<T> {
+impl<T> Service for ArrayQueueForcePusher<T> {
+    type Input = T;
     type Output = Option<T>;
-    type Error = ();
+    type Error = Infallible;
     fn process(&self, input: T) -> Result<Self::Output, Self::Error> {
         Ok(self.q.force_push(input))
     }
@@ -104,9 +106,10 @@ impl<T> ArrayQueuePopper<T> {
         Self { q }
     }
 }
-impl<T> Service<()> for ArrayQueuePopper<T> {
+impl<T> Service for ArrayQueuePopper<T> {
+    type Input = ();
     type Output = Option<T>;
-    type Error = ();
+    type Error = Infallible;
     fn process(&self, _: ()) -> Result<Self::Output, Self::Error> {
         Ok(self.q.pop())
     }
@@ -121,9 +124,10 @@ impl<T> SegQueuePusher<T> {
         Self { q }
     }
 }
-impl<T> Service<T> for SegQueuePusher<T> {
+impl<T> Service for SegQueuePusher<T> {
+    type Input = T;
     type Output = ();
-    type Error = ();
+    type Error = Infallible;
     fn process(&self, input: T) -> Result<Self::Output, Self::Error> {
         Ok(self.q.push(input))
     }
@@ -138,9 +142,10 @@ impl<T> SegQueuePopper<T> {
         Self { q }
     }
 }
-impl<T> Service<()> for SegQueuePopper<T> {
+impl<T> Service for SegQueuePopper<T> {
+    type Input = ();
     type Output = Option<T>;
-    type Error = ();
+    type Error = Infallible;
     fn process(&self, _: ()) -> Result<Self::Output, Self::Error> {
         Ok(self.q.pop())
     }
